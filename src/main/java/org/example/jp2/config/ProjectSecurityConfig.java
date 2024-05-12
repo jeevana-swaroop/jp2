@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
@@ -21,11 +22,14 @@ public class ProjectSecurityConfig {
     @Bean
     public SecurityFilterChain custonSecurityFilterChain(HttpSecurity http) throws Exception {
 
-        http.authorizeHttpRequests((request)->{
-            request.requestMatchers("/myAccount").permitAll()
-                    .anyRequest().authenticated();
+        http.csrf((csrf)->{
+                csrf.disable();
+                })
+                .authorizeHttpRequests((request) -> {
+                    request.requestMatchers("/myAccount", "/register").permitAll()
+                            .anyRequest().authenticated();
 
-        }).formLogin(Customizer.withDefaults())
+                }).formLogin(Customizer.withDefaults())
                 .logout(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
 
@@ -59,7 +63,7 @@ public class ProjectSecurityConfig {
 //    }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
     }
 
